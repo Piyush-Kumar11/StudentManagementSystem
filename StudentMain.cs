@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,8 +27,25 @@ namespace StudentManagementSystem
                 string email = Console.ReadLine();
 
                 Student s = new Student(studentId, name, age, grade, email);
-                students.Add(s);
-                Console.WriteLine("Data Added successfully");
+                var context = new ValidationContext(s);
+                var results = new List<ValidationResult>();
+                bool isValid = Validator.TryValidateObject(s, context, results, true);
+
+                if (isValid)
+                {
+                    Console.WriteLine("Data Validation success");
+                    students.Add(s);
+                    Console.WriteLine("Data Added successfully");
+                }
+                else
+                {
+                    Console.WriteLine("Data Validation failed!");
+                    foreach(var i in results)
+                    {
+                        Console.WriteLine($"Error: {i}");
+                    }
+                }
+                
             }
             catch(FormatException e)
             {
@@ -35,7 +53,7 @@ namespace StudentManagementSystem
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
+                Console.WriteLine($"An error occurred: {ex.Message}"+ex.StackTrace);
             }
 
         }
@@ -73,7 +91,7 @@ namespace StudentManagementSystem
                         if (students != null)
                         {
                             var studentsByName = students
-                            .Where(s => s.name.ToLower().Contains(name))
+                            .Where(s => s.Name.ToLower().Contains(name))
                             .ToList();
 
                             if (studentsByName.Count > 0)
@@ -96,7 +114,7 @@ namespace StudentManagementSystem
                         char grade = Convert.ToChar(Console.ReadLine());
                         if (students != null)
                         {
-                            var studentsByGrade = students.Where(s => s.grade == grade).ToList();
+                            var studentsByGrade = students.Where(s => s.Grade == grade).ToList();
                             if (studentsByGrade.Count > 0)
                                 studentsByGrade.ForEach(student => Console.WriteLine(student));
                             else
@@ -130,18 +148,18 @@ namespace StudentManagementSystem
             int studentId = Convert.ToInt32(Console.ReadLine());
             if(students != null)
             {
-                var student = students.FirstOrDefault(s => s.studentId == studentId);
+                var student = students.FirstOrDefault(s => s.StudentId == studentId);
 
                 if (student != null)
                 {
                     Console.WriteLine("Enter new Name:");
-                    student.name = Console.ReadLine();
+                    student.Name = Console.ReadLine();
                     Console.WriteLine("Enter new Age:");
-                    student.age = Convert.ToInt32(Console.ReadLine());
+                    student.Age = Convert.ToInt32(Console.ReadLine());
                     Console.WriteLine("Enter new Grade:");
-                    student.grade = Convert.ToChar(Console.ReadLine());
+                    student.Grade = Convert.ToChar(Console.ReadLine());
                     Console.WriteLine("Enter new Email:");
-                    student.email = Console.ReadLine();
+                    student.Email = Console.ReadLine();
                     Console.WriteLine("Student details updated successfully!");
                 }
                 else
@@ -163,7 +181,7 @@ namespace StudentManagementSystem
                 Console.WriteLine("Enter Student Id to delete:");
                 int studentId = Convert.ToInt32(Console.ReadLine());
 
-                var student = students.FirstOrDefault(s => s.studentId == studentId);
+                var student = students.FirstOrDefault(s => s.StudentId == studentId);
 
                 if (student != null)
                 {
